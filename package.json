@@ -3,7 +3,7 @@
   "description": "Data API for toutSport",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/StephanJ98/Pachangas_API.git",
+  "repository": "https://github.com/StephanJ98/ToutSport_API.git",
   "author": "StephanJ98 <diego.jeandon@gmail.com>",
   "license": "MIT",
   "private": false,
