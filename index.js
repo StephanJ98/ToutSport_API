@@ -15,13 +15,40 @@ app.get("/", (req, res) => {
 });
 
 app.get("/list", (req, res) => {
-    res.json(data);
+    if (Object.keys(data).length - 1 >= 0) {
+        res.json(data)
+    } else {
+        res.sendStatus(404)
+    }
 });
 
 app.get("/list/:id", (req, res) => {
     const elemId = req.params.id
     if (Object.keys(data).length - 1 >= elemId) {
         res.json(data[elemId])
+    } else {
+        res.sendStatus(404)
+    }
+});
+
+app.get("/category/:category", (req, res) => {
+    const category = req.params.category
+    let response = []
+    let categories = []
+
+    data.forEach(dataCategory => {
+        categories.push(dataCategory.sport)
+    })
+
+    if (categories.includes(category)) {
+        if (Object.keys(data).length - 1 >= 0) {
+            data.forEach(element => {
+                if (element.sport == category) {
+                    response.push(element)
+                }
+            })
+            res.json(response)
+        }
     } else {
         res.sendStatus(404)
     }
