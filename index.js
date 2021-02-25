@@ -54,6 +54,20 @@ app.get("/category/:category", (req, res) => {
     }
 });
 
+app.get("/categories", (req, res) => {
+    if (data.length > 0) {
+        let response = []
+        data.forEach(rawData => {
+            if (!response.includes(rawData.sport)) {
+                response.push(rawData.sport)
+            }
+        })
+        res.json(response)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
 app.listen(port, function () {
     console.log(`API running on port: ${port}`);
 });
