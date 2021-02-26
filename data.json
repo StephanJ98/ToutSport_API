@@ -3,7 +3,7 @@
         "id": 0,
         "image": "https://contents.mediadecathlon.com/p1916555/k$bb6586343feb1f0f78377139ddd2e406/sq/BICICLETA+DE+MONTA+A+ROCKRIDER+ST+520+V2+ALUMINIO+27+5+24V+GRIS+AMARILLO.webp?f=1000x1000",
         "title": "ROCKRIDER ST 520 V2 ALUMINIO 27.5 24V",
-        "sport": "BTT",
+        "sport": "btt",
         "store": "Decathlon",
         "price": 50
     },
@@ -11,7 +11,7 @@
         "id": 1,
         "image": "https://contents.mediadecathlon.com/p1863836/k$044cecb5d46ae70946b3a883735e7e8b/sq/BICICLETA+DE+MONTA+A+DOBLE+SUSPENSION+ROCKRIDER+ST+530S+27+5+9V+Negro+Rojo.webp?f=1000x1000",
         "title": "ROCKRIDER ST 530S 27.5 9V",
-        "sport": "BTT",
+        "sport": "btt",
         "store": "Decathlon",
         "price": 50
     },
@@ -19,7 +19,7 @@
         "id": 2,
         "image": "https://contents.mediadecathlon.com/p1562473/k$6bd7fcfad9415a2aa167ce5281dc9b98/sq/BICICLETA+DE+MONTA+A+DOBLE+SUSPENSI+N+ROCKRIDER+XC+100+S+29+12V+ROJO+Y+NEGRO.webp?f=1000x1000",
         "title": "ROCKRIDER XC 100 S 29 12V",
-        "sport": "BTT",
+        "sport": "btt",
         "store": "Decathlon",
         "price": 50
     },
