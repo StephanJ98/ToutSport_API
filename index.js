@@ -68,6 +68,22 @@ app.get("/categories", (req, res) => {
     }
 })
 
+app.get("/search/:elem", (req, res) => {
+    if (Object.keys(data).length - 1 >= 0) {
+        const tags = req.params.elem.split(',')
+        const response = []
+
+        data.forEach(rawData => {
+            if (rawData.tags.some(tag => tags.includes(tag))) {
+                response.push(rawData)
+            }
+        })
+        res.json(response)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
 app.listen(port, function () {
     console.log(`API running on port: ${port}`);
 });
