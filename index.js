@@ -1,89 +1,108 @@
-const express = require("express");
-const app = express();
-const cors = require('cors');
-const url = require('url');
-var port = process.env.PORT || 4000;
+const cluster = require('cluster');
+cluster.schedulingPolicy = cluster.SCHED_NONE;
+const numCPUs = require('os').cpus().length;
+const express = require('express');
 
-let data = require('./data')
+if (cluster.isMaster) {
+    console.log(`Master ${process.pid} is running`);
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.get("/", (req, res) => {
-    res.sendStatus(200)
-});
-
-app.get("/list", (req, res) => {
-    if (Object.keys(data).length - 1 >= 0) {
-        res.json(data)
-    } else {
-        res.sendStatus(404)
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
     }
-});
 
-app.get("/list/:id", (req, res) => {
-    const elemId = req.params.id
-    if (Object.keys(data).length - 1 >= elemId) {
-        res.json(data[elemId])
-    } else {
-        res.sendStatus(404)
-    }
-});
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died. Starting another worker.`);
+        cluster.fork();
+    });
+} else {
+    const express = require("express");
+    const app = express();
+    const cors = require('cors');
+    const url = require('url');
 
-app.get("/category/:category", (req, res) => {
-    const category = req.params.category
-    let response = []
-    let categories = []
+    var port = process.env.PORT || 4000;
+    let data = require('./data')
 
-    data.forEach(dataCategory => {
-        categories.push(dataCategory.sport)
-    })
+    app.use(cors());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
 
-    if (categories.includes(category)) {
+    app.get("/", (req, res) => {
+        res.sendStatus(200)
+    });
+
+    app.get("/list", (req, res) => {
         if (Object.keys(data).length - 1 >= 0) {
-            data.forEach(element => {
-                if (element.sport == category) {
-                    response.push(element)
+            res.json(data)
+        } else {
+            res.sendStatus(404)
+        }
+    });
+
+    app.get("/list/:id", (req, res) => {
+        const elemId = req.params.id
+        if (Object.keys(data).length - 1 >= elemId) {
+            res.json(data[elemId])
+        } else {
+            res.sendStatus(404)
+        }
+    });
+
+    app.get("/category/:category", (req, res) => {
+        const category = req.params.category
+        let response = []
+        let categories = []
+
+        data.forEach(dataCategory => {
+            categories.push(dataCategory.sport)
+        })
+
+        if (categories.includes(category)) {
+            if (Object.keys(data).length - 1 >= 0) {
+                data.forEach(element => {
+                    if (element.sport == category) {
+                        response.push(element)
+                    }
+                })
+                res.json(response)
+            }
+        } else {
+            res.sendStatus(404)
+        }
+    });
+
+    app.get("/categories", (req, res) => {
+        if (data.length > 0) {
+            let response = []
+            data.forEach(rawData => {
+                if (!response.includes(rawData.sport)) {
+                    response.push(rawData.sport)
                 }
             })
             res.json(response)
+        } else {
+            res.sendStatus(404)
         }
-    } else {
-        res.sendStatus(404)
-    }
-});
+    })
 
-app.get("/categories", (req, res) => {
-    if (data.length > 0) {
-        let response = []
-        data.forEach(rawData => {
-            if (!response.includes(rawData.sport)) {
-                response.push(rawData.sport)
-            }
-        })
-        res.json(response)
-    } else {
-        res.sendStatus(404)
-    }
-})
+    app.get("/search/:elem", (req, res) => {
+        if (Object.keys(data).length - 1 >= 0) {
+            const tags = req.params.elem.split(',')
+            const response = []
 
-app.get("/search/:elem", (req, res) => {
-    if (Object.keys(data).length - 1 >= 0) {
-        const tags = req.params.elem.split(',')
-        const response = []
+            data.forEach(rawData => {
+                if (rawData.tags.some(tag => tags.includes(tag))) {
+                    response.push(rawData)
+                }
+            })
+            res.json(response)
+        } else {
+            res.sendStatus(404)
+        }
+    })
 
-        data.forEach(rawData => {
-            if (rawData.tags.some(tag => tags.includes(tag))) {
-                response.push(rawData)
-            }
-        })
-        res.json(response)
-    } else {
-        res.sendStatus(404)
-    }
-})
-
-app.listen(port, function () {
-    console.log(`API running on port: ${port}`);
-});
+    app.listen(port, function () {
+        console.log(`Worker ${process.pid} started on port: ${port}`);
+    });
+}
