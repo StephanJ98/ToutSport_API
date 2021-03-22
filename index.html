@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>ToutSport Administración</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .separator {
+        width: 100%;
+        height: 2px;
+        border: 1px solid black;
+    }
+
+    .image {
+        width: 80px;
+        display: inline-block;
+    }
+
+    .text {
+        display: inline-block;
+        margin-left: 15px;
+        font-size: larger;
+        font-weight: bolder;
+    }
+</style>
+
+<body>
+    <div style="margin:100px;">
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <a class="navbar-brand" href="/">Administración</a>
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="/">Metrics</a>
+                    </li>
+                    <li>
+                        <a href="/about">Añadir</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div id="container" class="jumbotron" style="padding:40px;">
+            <!-- Data Location-->
+        </div>
+    </div>
+    <script>
+        (async function () {
+            let container = document.getElementById('container')
+            let data = await fetch(`https://toutsport-api.herokuapp.com/list`)
+                .then(res => res.json())
+                .then((data) => {
+                    return data
+                })
+
+            data.forEach(element => {
+                let div = document.createElement("div")
+                let p = document.createElement("p")
+                let p2 = document.createElement("p")
+                let separator = document.createElement("div")
+
+                separator.className = 'separator'
+
+                p.className = 'text'
+                p.innerHTML = element.title
+                p2.className = 'text'
+                p2.style.fontWeight = 'bolder'
+                p2.innerHTML = `Puntuación: ${element.rating}`
+
+                let image = document.createElement("img")
+                image.className = 'image'
+                image.src = element.images[0]
+
+                div.appendChild(image)
+                image.after(p)
+                p.after(p2)
+
+                container.appendChild(div)
+                container.appendChild(separator)
+            });
+        })()
+    </script>
+</body>
+
+</html>

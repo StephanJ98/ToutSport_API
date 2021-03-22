@@ -32,6 +32,10 @@ if (cluster.isMaster) {
         res.sendStatus(200)
     });
 
+    app.get("/admin", (req, res) => {
+        res.sendFile(`${__dirname}/index.html`);
+    });
+
     app.get("/list", (req, res) => {
         if (Object.keys(data).length - 1 >= 0) {
             res.json(data)
