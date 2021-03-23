@@ -134,12 +134,15 @@
                         headers: {
                             'Content-Type': 'application/json'
                         }
+                    }).then(res => {
+                        if (res.status == 200) {
+                            setTimeout(function () {
+                                window.location.reload()
+                            }, 1000);
+                        } else {
+                            alert("Contraseña Incorrecta")
+                        }
                     })
-
-                    setTimeout(function () {
-                        window.location.reload()
-                    }, 1000);
-
                 }
 
                 svgDel.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptNC4xNTEgMTcuOTQzbC00LjE0My00LjEwMi00LjExNyA0LjE1OS0xLjgzMy0xLjgzMyA0LjEwNC00LjE1Ny00LjE2Mi00LjExOSAxLjgzMy0xLjgzMyA0LjE1NSA0LjEwMiA0LjEwNi00LjE2IDEuODQ5IDEuODQ5LTQuMSA0LjE0MSA0LjE1NyA0LjEwNC0xLjg0OSAxLjg0OXoiLz48L3N2Zz4="
