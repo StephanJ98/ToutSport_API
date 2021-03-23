@@ -3,12 +3,19 @@
 
 <head>
     <title>ToutSport Administración</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <style>
+    .itemContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
     .separator {
         width: 100%;
         height: 2px;
@@ -21,36 +28,71 @@
     }
 
     .text {
-        display: inline-block;
-        margin-left: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         font-size: larger;
         font-weight: bolder;
+        margin-bottom: 0px;
+    }
+
+    .head {
+        margin-left: 15px;
+    }
+
+    .navs {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+
+    .link,
+    .link:hover {
+        text-decoration: none;
+        color: #afafaf;
+        font-weight: bold;
+    }
+
+    .button {
+        background: transparent;
+        border: none;
+    }
+
+    .btnContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .isDisabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        pointer-events: none;
     }
 </style>
 
 <body>
     <div style="margin:100px;">
-        <nav class="navbar navbar-inverse navbar-static-top">
-            <div class="container">
-                <a class="navbar-brand" href="/">Administración</a>
-                <ul class="nav navbar-nav">
-                    <li class="active">
-                        <a href="/">Metrics</a>
-                    </li>
-                    <li>
-                        <a href="/about">Añadir</a>
-                    </li>
-                </ul>
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand head" href="/">Administración</a>
+
+            <div class="navs">
+                <a class="link isDisabled" href="/">Metrics</a>
+                <a class="link" href="/about">Añadir</a>
             </div>
+
+
         </nav>
-        <div id="container" class="jumbotron" style="padding:40px;">
+        <div id="container" style="padding:40px;">
             <!-- Data Location-->
         </div>
     </div>
     <script>
         (async function () {
             let container = document.getElementById('container')
-            let data = await fetch(`https://toutsport-api.herokuapp.com/list`)
+            let data = await fetch(`/list`)
                 .then(res => res.json())
                 .then((data) => {
                     return data
@@ -58,9 +100,18 @@
 
             data.forEach(element => {
                 let div = document.createElement("div")
+                let image = document.createElement("img")
                 let p = document.createElement("p")
                 let p2 = document.createElement("p")
                 let separator = document.createElement("div")
+                let btnDel = document.createElement("button")
+                let btnEdit = document.createElement("button")
+                let svgDel = document.createElement("img")
+                let svgEdit = document.createElement("img")
+                let btnContainer = document.createElement("div")
+
+                div.className = 'itemContainer'
+                btnContainer.className = 'btnContainer'
 
                 separator.className = 'separator'
 
@@ -70,13 +121,38 @@
                 p2.style.fontWeight = 'bolder'
                 p2.innerHTML = `Puntuación: ${element.rating}`
 
-                let image = document.createElement("img")
                 image.className = 'image'
                 image.src = element.images[0]
+
+                btnDel.className = 'button'
+                btnEdit.className = 'button isDisabled'
+                btnDel.onclick = function () { /* Delete */
+                    let pass = prompt("Introduzca la contraseña de seguridad")
+                    fetch('/delete', {
+                        method: 'POST',
+                        body: JSON.stringify({ id: element.id, pass: pass }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+
+                    setTimeout(function () {
+                        window.location.reload()
+                    }, 1000);
+
+                }
+
+                svgDel.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptNC4xNTEgMTcuOTQzbC00LjE0My00LjEwMi00LjExNyA0LjE1OS0xLjgzMy0xLjgzMyA0LjEwNC00LjE1Ny00LjE2Mi00LjExOSAxLjgzMy0xLjgzMyA0LjE1NSA0LjEwMiA0LjEwNi00LjE2IDEuODQ5IDEuODQ5LTQuMSA0LjE0MSA0LjE1NyA0LjEwNC0xLjg0OSAxLjg0OXoiLz48L3N2Zz4="
+                svgEdit.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptLTUgMTdsMS4wMDYtNC4wMzYgMy4xMDYgMy4xMDUtNC4xMTIuOTMxem01LjE2LTEuODc5bC0zLjIwMi0zLjIwMiA1Ljg0MS01LjkxOSAzLjIwMSAzLjItNS44NCA1LjkyMXoiLz48L3N2Zz4="
+                btnDel.appendChild(svgDel)
+                btnEdit.appendChild(svgEdit)
 
                 div.appendChild(image)
                 image.after(p)
                 p.after(p2)
+                p2.after(btnContainer)
+                btnContainer.appendChild(btnEdit)
+                btnEdit.after(btnDel)
 
                 container.appendChild(div)
                 container.appendChild(separator)

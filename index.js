@@ -18,8 +18,11 @@ if (cluster.isMaster) {
 } else {
     const express = require("express");
     const app = express();
+    const dotenv = require('dotenv')
+    dotenv.config()
     const cors = require('cors');
     const url = require('url');
+    const fs = require('fs')
 
     var port = process.env.PORT || 4000;
     let data = require('./data')
@@ -35,6 +38,8 @@ if (cluster.isMaster) {
     app.get("/admin", (req, res) => {
         res.sendFile(`${__dirname}/index.html`);
     });
+
+    /* Funciones de la pagina de clientes */
 
     app.get("/list", (req, res) => {
         if (Object.keys(data).length - 1 >= 0) {
@@ -103,6 +108,31 @@ if (cluster.isMaster) {
             res.json(response)
         } else {
             res.sendStatus(404)
+        }
+    })
+
+    /* Funciones de la pagina de admin */
+
+    app.post("/delete", (req, res) => {
+        let id = req.body.id
+        let pass = req.body.pass
+
+        if (pass == process.env.PASS) {
+            let arr = data
+            let index = arr.findIndex(a => a.id === id)
+            if (index > -1) {
+                arr.splice(index, 1)
+            }
+            fs.writeFileSync('./data.json', JSON.stringify(arr), err => {
+                if (err) {
+                    console.log('Error writing file', err)
+                } else {
+                    console.log('Successfully wrote file')
+                }
+            })
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(403)
         }
     })
 
