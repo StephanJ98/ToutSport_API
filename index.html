@@ -76,7 +76,7 @@
 <body>
     <div style="margin:100px;">
         <nav class="navbar navbar-dark bg-dark">
-            <a class="navbar-brand head" href="/">Administración</a>
+            <a class="navbar-brand head" href="/admin">Administración</a>
 
             <div class="navs">
                 <a class="link isDisabled" href="/">Metrics</a>
@@ -125,7 +125,7 @@
                 image.src = element.images[0]
 
                 btnDel.className = 'button'
-                btnEdit.className = 'button isDisabled'
+                btnEdit.className = 'button'
                 btnDel.onclick = function () { /* Delete */
                     let pass = prompt("Introduzca la contraseña de seguridad")
                     fetch('/delete', {
@@ -143,6 +143,22 @@
                             alert("Contraseña Incorrecta")
                         }
                     })
+                }
+
+                btnEdit.onclick = function () { /* Edit */
+                    window.localStorage.setItem('id', element.id)
+                    window.localStorage.setItem('title', element.title)
+                    window.localStorage.setItem('images', element.images)
+                    window.localStorage.setItem('rating', element.rating)
+                    window.localStorage.setItem('description', element.description)
+                    window.localStorage.setItem('sport', element.sport)
+                    window.localStorage.setItem('store', element.store)
+                    window.localStorage.setItem('peso', element.caracteristicas.peso)
+                    window.localStorage.setItem('talla', element.caracteristicas.talla)
+                    window.localStorage.setItem('creador', element.caracteristicas.creador)
+                    window.localStorage.setItem('tags', element.tags)
+
+                    window.location.assign('/admin/edit')
                 }
 
                 svgDel.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptNC4xNTEgMTcuOTQzbC00LjE0My00LjEwMi00LjExNyA0LjE1OS0xLjgzMy0xLjgzMyA0LjEwNC00LjE1Ny00LjE2Mi00LjExOSAxLjgzMy0xLjgzMyA0LjE1NSA0LjEwMiA0LjEwNi00LjE2IDEuODQ5IDEuODQ5LTQuMSA0LjE0MSA0LjE1NyA0LjEwNC0xLjg0OSAxLjg0OXoiLz48L3N2Zz4="

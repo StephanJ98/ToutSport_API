@@ -39,6 +39,10 @@ if (cluster.isMaster) {
         res.sendFile(`${__dirname}/index.html`);
     });
 
+    app.get("/admin/edit", (req, res) => {
+        res.sendFile(`${__dirname}/edit.html`);
+    });
+
     /* Funciones de la pagina de clientes */
 
     app.get("/list", (req, res) => {
@@ -122,6 +126,58 @@ if (cluster.isMaster) {
             let index = arr.findIndex(a => a.id === id)
             if (index > -1) {
                 arr.splice(index, 1)
+            }
+            fs.writeFileSync('./data.json', JSON.stringify(arr), err => {
+                if (err) {
+                    console.log('Error writing file', err)
+                } else {
+                    console.log('Successfully wrote file')
+                }
+            })
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(403)
+        }
+    })
+
+    app.post("/edit", (req, res) => {
+        let pass = req.body.pass
+
+        if (pass == process.env.PASS) {
+            let arr = data
+            let id = req.body.id
+            let title = req.body.title
+            let rating = req.body.rating
+            let description = req.body.description
+            let sport = req.body.sport
+            let store = req.body.store
+            let peso = req.body.peso
+            let creador = req.body.creador
+            let talla = req.body.talla
+            let tags = req.body.tags.split(',')
+            let images = req.body.images.split(',')
+
+            let obj = {
+                "id": Number(id),
+                "title": title,
+                "images": images,
+                "rating": Number(rating),
+                "description": description,
+                "sport": sport,
+                "store": store,
+                "caracteristicas": {
+                    "peso": Number(peso),
+                    "talla": talla,
+                    "creador": creador
+                },
+                "tags": tags
+            }
+
+
+            let index = arr.findIndex(a => a.id == req.body.id)
+            if (index > -1) {
+                /* Work */
+                arr[index] = obj
             }
             fs.writeFileSync('./data.json', JSON.stringify(arr), err => {
                 if (err) {

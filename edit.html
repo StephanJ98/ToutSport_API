@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>ToutSport Administración</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<style>
+    .isDisabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .link,
+    .link:hover {
+        text-decoration: none;
+        color: #afafaf;
+        font-weight: bold;
+    }
+
+    .head {
+        margin-left: 15px;
+    }
+
+    .navs {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 80%;
+    }
+
+    #container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+
+    .shortContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .shortContainer>* {
+        width: 25%;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div style="margin:100px;height: 100%;">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand head" href="/admin">Administración</a>
+
+            <div class="navs">
+                <a class="link isDisabled" href="/">Metrics</a>
+                <a class="link" href="/about">Añadir</a>
+            </div>
+
+
+        </nav>
+        <div id="container" style="padding:40px;">
+            <div style="width:100%;">
+                <p style="width:100%;">Nombre: </p>
+                <input style="width:100%;" type="text" id="title">
+            </div>
+            <div style="width:100%;">
+                <p style="width:100%;">Descripcion: </p>
+                <textarea rows="3" style="width:100%;" id="description"></textarea>
+            </div>
+            <div style="width:100%;">
+                <p style="width:100%;">Imagenes: </p>
+                <input style="width:100%;" type="text" id="images">
+            </div>
+
+            <div class="shortContainer">
+                <p>Rating: (Min: 0 Max: 5)</p>
+                <input type="number" min="0" step="0.01" id="rating">
+                <p>Deporte: </p>
+                <input type="text" id="sport">
+            </div>
+
+            <div class="shortContainer">
+                <p>Tienda: </p>
+                <input type="text" id="store">
+                <p>Peso: (En gramos)</p>
+                <input type="number" min="0" id="peso">
+            </div>
+
+            <div class="shortContainer">
+                <p>Marca: </p>
+                <input type="text" id="creador">
+                <p>Talla: </p>
+                <select id="talla">
+                    <option value="XXS">XXS</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option selected value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+
+            <div style="width:100%;">
+                <p style="width:100%;">Tags: (Separar por , entre cada tag)</p>
+                <input style="width:100%;" type="text" id="tags">
+            </div>
+
+            <input id="button" type="submit" value="Editar">
+        </div>
+    </div>
+    <script>
+        (async function () {
+            document.getElementById('title').value = window.localStorage.getItem('title')
+            document.getElementById('rating').value = window.localStorage.getItem('rating')
+            document.getElementById('description').value = window.localStorage.getItem('description')
+            document.getElementById('sport').value = window.localStorage.getItem('sport')
+            document.getElementById('store').value = window.localStorage.getItem('store')
+            document.getElementById('peso').value = window.localStorage.getItem('peso')
+            document.getElementById('creador').value = window.localStorage.getItem('creador')
+            document.getElementById('tags').value = window.localStorage.getItem('tags')
+            document.getElementById('images').value = window.localStorage.getItem('images')
+
+            let btn = document.getElementById('button')
+            btn.onclick = function () { /* Edit */
+                let id = window.localStorage.getItem('id')
+                let pass = prompt("Introduzca la contraseña de seguridad")
+
+                let title = document.getElementById('title').value
+                let rating = document.getElementById('rating').value
+                let description = document.getElementById('description').value
+                let sport = document.getElementById('sport').value
+                let store = document.getElementById('store').value
+                let peso = document.getElementById('peso').value
+                let talla = document.getElementById('talla').value
+                let creador = document.getElementById('creador').value
+                let tags = document.getElementById('tags').value
+                let images = document.getElementById('images').value
+
+                fetch('/edit', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: id, pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if (res.status == 200) {
+                        setTimeout(function () {
+                            window.location.assign('/admin')
+                        }, 1000);
+                    } else {
+                        alert("Contraseña Incorrecta")
+                    }
+                })
+            }
+
+        })()
+    </script>
+</body>
+
+</html>
