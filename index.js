@@ -11,8 +11,8 @@ if (cluster.isMaster) {
     }
 
     cluster.on('exit', (worker, _code, _signal) => {
-        /*console.log(`Worker ${worker.process.pid} died. Starting another worker.`);
-        cluster.fork();*/
+        console.log(`Worker ${worker.process.pid} died. Starting another worker.`);
+        cluster.fork();
     });
 } else {
     const express = require("express");
