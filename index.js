@@ -22,8 +22,6 @@ if (cluster.isMaster) {
     const MongoClient = require('mongodb').MongoClient
 
     var port = process.env.PORT || 4000;
-    let data = require('./data')
-    const fs = require('fs') /** */
 
     const mongodbOptions = {
         useNewUrlParser: true,
