@@ -1,7 +1,6 @@
 const cluster = require('cluster');
 cluster.schedulingPolicy = cluster.SCHED_NONE;
 const numCPUs = require('os').cpus().length;
-const express = require('express');
 
 if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`);
@@ -11,184 +10,250 @@ if (cluster.isMaster) {
         cluster.fork();
     }
 
-    cluster.on('exit', (worker, code, signal) => {
+    cluster.on('exit', (worker, _code, _signal) => {
         console.log(`Worker ${worker.process.pid} died. Starting another worker.`);
         cluster.fork();
     });
 } else {
     const express = require("express");
     const app = express();
-    const dotenv = require('dotenv')
-    dotenv.config()
+    require('dotenv').config()
     const cors = require('cors');
-    const url = require('url');
-    const fs = require('fs')
+    const MongoClient = require('mongodb').MongoClient
 
     var port = process.env.PORT || 4000;
     let data = require('./data')
+    const fs = require('fs') /** */
+
+    const mongodbOptions = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }
+    let cachedDb = null
+
+    async function connectToDatabase(uri) {
+        if (cachedDb) {
+            return cachedDb
+        }
+        const client = await MongoClient.connect(uri, mongodbOptions)
+        const db = await client.db(new URL(uri).pathname.substr(1))
+        cachedDb = db
+        return db
+    }
 
     app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
 
-    app.get("/", (req, res) => {
+    app.get("/", (_req, res) => {
         res.sendStatus(200)
     });
 
-    app.get("/admin", (req, res) => {
+    app.get("/admin", (_req, res) => {
         res.sendFile(`${__dirname}/index.html`);
     });
 
-    app.get("/admin/edit", (req, res) => {
+    app.get("/admin/edit", (_req, res) => {
         res.sendFile(`${__dirname}/edit.html`);
+    });
+    app.get("/admin/add", (_req, res) => {
+        res.sendFile(`${__dirname}/add.html`);
     });
 
     /* Funciones de la pagina de clientes */
 
-    app.get("/list", (req, res) => {
-        if (Object.keys(data).length - 1 >= 0) {
-            res.json(data)
-        } else {
-            res.sendStatus(404)
+    app.get("/list", async (_req, res) => {
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({}).toArray()
+            return res.json(db)
+        } catch (e) {
+            res.sendStatus(503)
+            console.log(e)
         }
     });
 
-    app.get("/list/:id", (req, res) => {
-        const elemId = req.params.id
-        if (Object.keys(data).length - 1 >= elemId) {
-            res.json(data[elemId])
-        } else {
-            res.sendStatus(404)
+    app.get("/list/:id", async (req, res) => {
+        try {
+            const elemId = Number(req.params.id)
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({ id: elemId }, {
+                projection: {
+                    _id: 0
+                }
+            }).toArray()
+            return res.json(db[0])
+        } catch (e) {
+            res.sendStatus(503)
+            console.log(e)
         }
     });
 
-    app.get("/category/:category", (req, res) => {
-        const category = req.params.category
-        let response = []
-        let categories = []
-
-        data.forEach(dataCategory => {
-            categories.push(dataCategory.sport)
-        })
-
-        if (categories.includes(category)) {
-            if (Object.keys(data).length - 1 >= 0) {
-                data.forEach(element => {
-                    if (element.sport == category) {
-                        response.push(element)
-                    }
-                })
-                res.json(response)
-            }
-        } else {
-            res.sendStatus(404)
-        }
-    });
-
-    app.get("/categories", (req, res) => {
-        if (data.length > 0) {
+    app.get("/category/:category", async (req, res) => {
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({}).toArray()
+            const category = req.params.category
             let response = []
-            data.forEach(rawData => {
+            let categories = []
+
+            db.forEach(dataCategory => {
+                categories.push(dataCategory.sport)
+            })
+
+            if (categories.includes(category)) {
+                if (Object.keys(db).length - 1 >= 0) {
+                    db.forEach(element => {
+                        if (element.sport == category) {
+                            response.push(element)
+                        }
+                    })
+                    res.json(response)
+                }
+            } else {
+                res.sendStatus(503)
+            }
+        } catch (e) {
+            res.sendStatus(503)
+            console.log(e)
+        }
+    })
+
+    app.get("/categories", async (_req, res) => {
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({}).toArray()
+            let response = []
+            db.forEach(rawData => {
                 if (!response.includes(rawData.sport)) {
                     response.push(rawData.sport)
                 }
             })
             res.json(response)
-        } else {
-            res.sendStatus(404)
+        } catch (e) {
+            res.sendStatus(503)
+            console.log(e)
         }
     })
 
-    app.get("/search/:elem", (req, res) => {
-        if (Object.keys(data).length - 1 >= 0) {
-            const tags = req.params.elem.split(',')
-            const response = []
+    app.get("/search/:elem", async (req, res) => {
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({}).toArray()
 
-            data.forEach(rawData => {
-                if (rawData.tags.some(tag => tags.includes(tag))) {
-                    response.push(rawData)
-                }
-            })
-            res.json(response)
-        } else {
-            res.sendStatus(404)
+            if (Object.keys(db).length - 1 >= 0) {
+                const tags = req.params.elem.split(',')
+                const response = []
+
+                db.forEach(rawData => {
+                    if (rawData.tags.some(tag => tags.includes(tag))) {
+                        response.push(rawData)
+                    }
+                })
+                res.json(response)
+            } else {
+                res.sendStatus(503)
+            }
+        } catch (e) {
+            res.sendStatus(503)
+            console.log(e)
         }
     })
 
     /* Funciones de la pagina de admin */
 
-    app.post("/delete", (req, res) => {
-        let id = req.body.id
+    app.post("/delete", async (req, res) => {
+        let id = Number(req.body.id)
         let pass = req.body.pass
 
-        if (pass == process.env.PASS) {
-            let arr = data
-            let index = arr.findIndex(a => a.id === id)
-            if (index > -1) {
-                arr.splice(index, 1)
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+
+            if (pass == process.env.PASS) {
+                collection.deleteOne({ id: id })
+                res.sendStatus(200)
+            } else {
+                res.sendStatus(403)
             }
-            fs.writeFileSync('./data.json', JSON.stringify(arr), err => {
-                if (err) {
-                    console.log('Error writing file', err)
-                } else {
-                    console.log('Successfully wrote file')
-                }
-            })
-            res.sendStatus(200)
-        } else {
-            res.sendStatus(403)
+        } catch (error) {
+            res.sendStatus(503)
+            console.log(error)
         }
     })
 
-    app.post("/edit", (req, res) => {
+    app.post("/edit", async (req, res) => {
         let pass = req.body.pass
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
 
-        if (pass == process.env.PASS) {
-            let arr = data
-            let id = req.body.id
-            let title = req.body.title
-            let rating = req.body.rating
-            let description = req.body.description
-            let sport = req.body.sport
-            let store = req.body.store
-            let peso = req.body.peso
-            let creador = req.body.creador
-            let talla = req.body.talla
-            let tags = req.body.tags.split(',')
-            let images = req.body.images.split(',')
+            if (pass == process.env.PASS) {
+                let id = Number(req.body.id)
 
-            let obj = {
-                "id": Number(id),
-                "title": title,
-                "images": images,
-                "rating": Number(rating),
-                "description": description,
-                "sport": sport,
-                "store": store,
-                "caracteristicas": {
-                    "peso": Number(peso),
-                    "talla": talla,
-                    "creador": creador
-                },
-                "tags": tags
+                collection.updateOne({ id: id }, {
+                    $set: {
+                        title: req.body.title,
+                        images: req.body.images.split(','),
+                        rating: Number(req.body.rating),
+                        description: req.body.description,
+                        sport: req.body.sport,
+                        store: req.body.store,
+                        caracteristicas: {
+                            peso: Number(req.body.peso),
+                            talla: req.body.talla,
+                            creador: req.body.creador
+                        },
+                        tags: req.body.tags.split(',')
+                    }
+                })
+
+                res.sendStatus(200)
+            } else {
+                res.sendStatus(403)
             }
+        } catch (error) {
+            res.sendStatus(503)
+            console.log(error)
+        }
+    })
 
+    app.post("/add", async (req, res) => {
+        let pass = req.body.pass
+        try {
+            const cluster = await connectToDatabase(process.env.MONGODB_URI)
+            const collection = await cluster.collection('products')
+            const db = await collection.find({}).toArray()
 
-            let index = arr.findIndex(a => a.id == req.body.id)
-            if (index > -1) {
-                /* Work */
-                arr[index] = obj
+            if (pass == process.env.PASS) {
+                collection.insertOne({
+                    id: db.length,
+                    title: req.body.title,
+                    images: req.body.images.split(','),
+                    rating: Number(req.body.rating),
+                    description: req.body.description,
+                    sport: req.body.sport,
+                    store: req.body.store,
+                    caracteristicas: {
+                        peso: Number(req.body.peso),
+                        talla: req.body.talla,
+                        creador: req.body.creador
+                    },
+                    tags: req.body.tags.split(',')
+                })
+
+                res.sendStatus(200)
+            } else {
+                res.sendStatus(403)
             }
-            fs.writeFileSync('./data.json', JSON.stringify(arr), err => {
-                if (err) {
-                    console.log('Error writing file', err)
-                } else {
-                    console.log('Successfully wrote file')
-                }
-            })
-            res.sendStatus(200)
-        } else {
-            res.sendStatus(403)
+        } catch (error) {
+            res.sendStatus(503)
+            console.log(error)
         }
     })
 

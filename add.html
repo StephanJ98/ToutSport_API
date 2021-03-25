@@ -121,24 +121,13 @@
                 <input style="width:100%;" type="text" id="tags">
             </div>
 
-            <input id="button" type="submit" value="Editar">
+            <input id="button" type="submit" value="Añadir">
         </div>
     </div>
     <script>
         (async function () {
-            document.getElementById('title').value = window.localStorage.getItem('title')
-            document.getElementById('rating').value = window.localStorage.getItem('rating')
-            document.getElementById('description').value = window.localStorage.getItem('description')
-            document.getElementById('sport').value = window.localStorage.getItem('sport')
-            document.getElementById('store').value = window.localStorage.getItem('store')
-            document.getElementById('peso').value = window.localStorage.getItem('peso')
-            document.getElementById('creador').value = window.localStorage.getItem('creador')
-            document.getElementById('tags').value = window.localStorage.getItem('tags')
-            document.getElementById('images').value = window.localStorage.getItem('images')
-
             let btn = document.getElementById('button')
-            btn.onclick = function () { /* Edit */
-                let id = window.localStorage.getItem('id')
+            btn.onclick = function () { /* Add */
                 let pass = prompt("Introduzca la contraseña de seguridad")
 
                 let title = document.getElementById('title').value
@@ -152,10 +141,10 @@
                 let tags = document.getElementById('tags').value
                 let images = document.getElementById('images').value
 
-                fetch('/edit', {
+                fetch('/add', {
                     method: 'POST',
                     body: JSON.stringify({
-                        id: id, pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images
+                        pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images
                     }),
                     headers: {
                         'Content-Type': 'application/json'
