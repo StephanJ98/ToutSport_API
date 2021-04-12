@@ -95,7 +95,7 @@
             let data = await fetch(`/list`)
                 .then(res => res.json())
                 .then((data) => {
-                    return data
+                    return data.sort((a, b) => a.id - b.id)
                 })
 
             data.forEach(element => {
