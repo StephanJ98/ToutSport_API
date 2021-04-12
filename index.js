@@ -65,7 +65,7 @@ if (cluster.isMaster) {
             const cluster = await connectToDatabase(process.env.MONGODB_URI)
             const collection = await cluster.collection('products')
             const db = await collection.find({}).toArray()
-            return res.json(db)
+            return res.json(db.sort(() => Math.random() - 0.5))
         } catch (e) {
             res.sendStatus(503)
             console.log(e)
