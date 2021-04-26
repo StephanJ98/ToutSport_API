@@ -77,7 +77,7 @@ if (cluster.isMaster) {
             const elemId = Number(req.params.id)
             const cluster = await connectToDatabase(process.env.MONGODB_URI)
             const collection = await cluster.collection('products')
-            const db = await collection.find({ _id: elemId }, {
+            const db = await collection.find({ _id: ObjectID(elemId) }, {
                 projection: {
                     _id: 0
                 }
