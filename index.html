@@ -116,7 +116,7 @@
                 separator.className = 'separator'
 
                 p.className = 'text'
-                p.innerHTML = `${element.id} ${element.title}`
+                p.innerHTML = `${element._id} ${element.title}`
                 p2.className = 'text'
                 p2.style.fontWeight = 'bolder'
                 p2.innerHTML = `Puntuación: ${element.rating}`
@@ -130,7 +130,7 @@
                     let pass = prompt("Introduzca la contraseña de seguridad")
                     fetch('/delete', {
                         method: 'POST',
-                        body: JSON.stringify({ id: element.id, pass: pass }),
+                        body: JSON.stringify({ id: element._id, pass: pass }),
                         headers: {
                             'Content-Type': 'application/json'
                         }
@@ -146,7 +146,7 @@
                 }
 
                 btnEdit.onclick = function () { /* Edit */
-                    window.localStorage.setItem('id', element.id)
+                    window.localStorage.setItem('id', element._id)
                     window.localStorage.setItem('title', element.title)
                     window.localStorage.setItem('images', element.images)
                     window.localStorage.setItem('rating', element.rating)
