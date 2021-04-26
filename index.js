@@ -19,7 +19,7 @@ if (cluster.isMaster) {
     const app = express();
     require('dotenv').config()
     const cors = require('cors');
-    const MongoClient = require('mongodb').MongoClient
+    const { MongoClient, ObjectID } = require('mongodb')
 
     var port = process.env.PORT || 4000;
 
@@ -77,7 +77,7 @@ if (cluster.isMaster) {
             const elemId = Number(req.params.id)
             const cluster = await connectToDatabase(process.env.MONGODB_URI)
             const collection = await cluster.collection('products')
-            const db = await collection.find({ id: elemId }, {
+            const db = await collection.find({ _id: elemId }, {
                 projection: {
                     _id: 0
                 }
@@ -174,7 +174,7 @@ if (cluster.isMaster) {
             const collection = await cluster.collection('products')
 
             if (pass == process.env.PASS) {
-                collection.deleteOne({ id: id })
+                collection.deleteOne({ _id: ObjectID(id) })
                 res.sendStatus(200)
             } else {
                 res.sendStatus(403)
@@ -194,7 +194,7 @@ if (cluster.isMaster) {
             if (pass == process.env.PASS) {
                 let id = Number(req.body.id)
 
-                collection.updateOne({ id: id }, {
+                collection.updateOne({ _id: ObjectID(id) }, {
                     $set: {
                         title: req.body.title,
                         images: req.body.images.split(','),
@@ -230,7 +230,6 @@ if (cluster.isMaster) {
 
             if (pass == process.env.PASS) {
                 collection.insertOne({
-                    id: db[db.length - 1].id,
                     title: req.body.title,
                     images: req.body.images.split(','),
                     rating: Number(req.body.rating),
