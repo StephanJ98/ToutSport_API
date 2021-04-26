@@ -76,11 +76,7 @@ if (cluster.isMaster) {
         try {
             const cluster = await connectToDatabase(process.env.MONGODB_URI)
             const collection = await cluster.collection('products')
-            const db = await collection.find({ _id: ObjectID(req.params.id) }, {
-                projection: {
-                    _id: 0
-                }
-            }).toArray()
+            const db = await collection.find({ _id: ObjectID(req.params.id) }).toArray()
             return res.json(db[0])
         } catch (e) {
             res.sendStatus(503)
