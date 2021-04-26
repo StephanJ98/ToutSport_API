@@ -74,10 +74,9 @@ if (cluster.isMaster) {
 
     app.get("/list/:id", async (req, res) => {
         try {
-            const elemId = req.params.id
             const cluster = await connectToDatabase(process.env.MONGODB_URI)
             const collection = await cluster.collection('products')
-            const db = await collection.find({ _id: ObjectID(elemId) }, {
+            const db = await collection.find({ _id: ObjectID(req.params.id) }, {
                 projection: {
                     _id: 0
                 }
@@ -166,7 +165,6 @@ if (cluster.isMaster) {
     /* Funciones de la pagina de admin */
 
     app.post("/delete", async (req, res) => {
-        let id = Number(req.body.id)
         let pass = req.body.pass
 
         try {
@@ -174,7 +172,7 @@ if (cluster.isMaster) {
             const collection = await cluster.collection('products')
 
             if (pass == process.env.PASS) {
-                collection.deleteOne({ _id: ObjectID(id) })
+                collection.deleteOne({ _id: ObjectID(req.body.id) })
                 res.sendStatus(200)
             } else {
                 res.sendStatus(403)
@@ -192,9 +190,7 @@ if (cluster.isMaster) {
             const collection = await cluster.collection('products')
 
             if (pass == process.env.PASS) {
-                let id = Number(req.body.id)
-
-                collection.updateOne({ _id: ObjectID(id) }, {
+                collection.updateOne({ _id: ObjectID(req.body.id) }, {
                     $set: {
                         title: req.body.title,
                         images: req.body.images.split(','),
