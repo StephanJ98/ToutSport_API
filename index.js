@@ -230,7 +230,7 @@ if (cluster.isMaster) {
 
             if (pass == process.env.PASS) {
                 collection.insertOne({
-                    id: db.length,
+                    id: db[db.length - 1].id,
                     title: req.body.title,
                     images: req.body.images.split(','),
                     rating: Number(req.body.rating),
