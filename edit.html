@@ -153,14 +153,14 @@
                 let title = document.getElementById('title').value
                 let rating = document.getElementById('rating').value
                 let description = document.getElementById('description').value
-                let sport = String(document.getElementById('sport').value).toLocaleLowerCase
+                let sport = String(document.getElementById('sport').value).toLocaleLowerCase()
+                sport = replaceAccents(String(sport))
                 let store = document.getElementById('store').value
-                sport = replaceAccents(sport)
                 let peso = document.getElementById('peso').value
                 let talla = document.getElementById('talla').value
                 let creador = document.getElementById('creador').value
-                let tags = String(document.getElementById('tags').value).toLocaleLowerCase
-                tags = replaceAccents(tags)
+                let tags = String(document.getElementById('tags').value).toLocaleLowerCase()
+                tags = replaceAccents(String(tags))
                 let images = document.getElementById('images').value
 
                 fetch('/edit', {
@@ -181,7 +181,6 @@
                     }
                 })
             }
-
         })()
     </script>
 </body>
