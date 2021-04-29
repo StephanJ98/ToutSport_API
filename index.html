@@ -36,6 +36,16 @@
         margin-bottom: 0px;
     }
 
+    .textId{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: larger;
+        font-weight: bolder;
+        margin-bottom: 0px;
+        color: #ff7300;
+    }
+
     .head {
         margin-left: 15px;
     }
@@ -101,6 +111,7 @@
             data.forEach(element => {
                 let div = document.createElement("div")
                 let image = document.createElement("img")
+                let id = document.createElement("p")
                 let p = document.createElement("p")
                 let p2 = document.createElement("p")
                 let separator = document.createElement("div")
@@ -115,8 +126,13 @@
 
                 separator.className = 'separator'
 
+                id.className = 'textId'
+                id.innerHTML = 'VER ID'
+                id.onclick = function () {
+                    alert(`El ID del producto seleccionado es: ${element._id}`)
+                }
                 p.className = 'text'
-                p.innerHTML = `${element._id} ${element.title}`
+                p.innerHTML = `${element.title}`
                 p2.className = 'text'
                 p2.style.fontWeight = 'bolder'
                 p2.innerHTML = `Puntuación: ${element.rating}`
@@ -167,7 +183,8 @@
                 btnEdit.appendChild(svgEdit)
 
                 div.appendChild(image)
-                image.after(p)
+                image.after(id)
+                id.after(p)
                 p.after(p2)
                 p2.after(btnContainer)
                 btnContainer.appendChild(btnEdit)
