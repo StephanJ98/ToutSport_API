@@ -125,6 +125,15 @@
         </div>
     </div>
     <script>
+        function replaceAccents(str) {
+            str = str.replace(/[áàäâã]/g, "a")
+            str = str.replace(/[éèëê]/g, "e")
+            str = str.replace(/[íìïî]/g, "i")
+            str = str.replace(/[óòöôõ]/g, "o")
+            str = str.replace(/[úùüû]/g, "u")
+            return str
+        }
+
         (async function () {
             let btn = document.getElementById('button')
             btn.onclick = function () { /* Add */
@@ -133,12 +142,14 @@
                 let title = document.getElementById('title').value
                 let rating = document.getElementById('rating').value
                 let description = document.getElementById('description').value
-                let sport = document.getElementById('sport').value
+                let sport = String(document.getElementById('sport').value).toLocaleLowerCase
+                sport = replaceAccents(sport)
                 let store = document.getElementById('store').value
                 let peso = document.getElementById('peso').value
                 let talla = document.getElementById('talla').value
                 let creador = document.getElementById('creador').value
-                let tags = document.getElementById('tags').value
+                let tags = String(document.getElementById('tags').value).toLocaleLowerCase
+                tags = replaceAccents(tags)
                 let images = document.getElementById('images').value
 
                 fetch('/add', {
