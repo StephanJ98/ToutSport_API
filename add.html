@@ -121,6 +121,11 @@
                 <input style="width:100%;" type="text" id="tags">
             </div>
 
+            <div style="width:100%;">
+                <p style="width:100%;">Enlace proveedor:</p>
+                <input style="width:100%;" type="url" id="link">
+            </div>
+
             <input id="button" type="submit" value="Añadir">
         </div>
     </div>
@@ -151,11 +156,12 @@
                 let tags = String(document.getElementById('tags').value).toLocaleLowerCase()
                 tags = replaceAccents(tags)
                 let images = document.getElementById('images').value
+                let link = document.getElementById('link').value
 
                 fetch('/add', {
                     method: 'POST',
                     body: JSON.stringify({
-                        pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images
+                        pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images, link: link
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -170,7 +176,6 @@
                     }
                 })
             }
-
         })()
     </script>
 </body>

@@ -121,6 +121,11 @@
                 <input style="width:100%;" type="text" id="tags">
             </div>
 
+            <div style="width:100%;">
+                <p style="width:100%;">Enlace proveedor:</p>
+                <input style="width:100%;" type="url" id="link">
+            </div>
+
             <input id="button" type="submit" value="Editar">
         </div>
     </div>
@@ -144,6 +149,7 @@
             document.getElementById('creador').value = window.localStorage.getItem('creador')
             document.getElementById('tags').value = window.localStorage.getItem('tags')
             document.getElementById('images').value = window.localStorage.getItem('images')
+            document.getElementById('link').value = window.localStorage.getItem('link')
 
             let btn = document.getElementById('button')
             btn.onclick = function () { /* Edit */
@@ -162,11 +168,12 @@
                 let tags = String(document.getElementById('tags').value).toLocaleLowerCase()
                 tags = replaceAccents(String(tags))
                 let images = document.getElementById('images').value
+                let link = document.getElementById('link').value
 
                 fetch('/edit', {
                     method: 'POST',
                     body: JSON.stringify({
-                        id: id, pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images
+                        id: id, pass: pass, title: title, rating: rating, description: description, sport: sport, store: store, peso: peso, talla: talla, creador: creador, tags: tags, images: images, link: link
                     }),
                     headers: {
                         'Content-Type': 'application/json'

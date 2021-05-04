@@ -199,7 +199,8 @@ if (cluster.isMaster) {
                             talla: req.body.talla,
                             creador: req.body.creador
                         },
-                        tags: req.body.tags.split(',')
+                        tags: req.body.tags.split(','),
+                        link: req.body.link
                     }
                 })
 
@@ -233,7 +234,8 @@ if (cluster.isMaster) {
                         talla: req.body.talla,
                         creador: req.body.creador
                     },
-                    tags: req.body.tags.split(',')
+                    tags: req.body.tags.split(','),
+                    link: req.body.link
                 })
 
                 res.sendStatus(200)
