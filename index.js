@@ -34,7 +34,7 @@ if (cluster.isMaster) {
             return cachedDb
         }
         const client = await MongoClient.connect(uri, mongodbOptions)
-        const db = await client.db(new URL(uri).pathname.substr(1))
+        const db = await client.db(new URL(uri).pathname.substring(1))
         cachedDb = db
         return db
     }
